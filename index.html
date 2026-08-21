@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دعوة زفاف سارة وحمزه</title>
+  <link rel="icon" href="logo.jpg" type="image/jpeg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- مكتبة Confetti للألعاب النارية -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      position: relative;
+      font-family: 'Tajawal', sans-serif;
+      background: radial-gradient(circle at 50% 20%, #fde8f2 0%, #fbcfe8 45%, #f472b6 90%);
+      background-attachment: fixed;
+      color: #831843;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* تأثير الإضاءة الملونة خلف الصفحة */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      width: 350px;
+      height: 350px;
+      border-radius: 50%;
+      background: rgba(255, 182, 193, 0.6);
+      filter: blur(90px);
+      z-index: 0;
+      pointer-events: none;
+      animation: pulseGlow 8s infinite alternate ease-in-out;
+    }
+    body::before { top: 5%; left: 2%; }
+    body::after { bottom: 10%; right: 2%; background: rgba(244, 114, 182, 0.5); }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.3) translate(40px, -30px); }
+    }
+
+    /* خلفية القلوب والمؤثرات */
+    .hearts-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .floating-heart {
+      position: absolute;
+      bottom: -40px;
+      color: rgba(236, 72, 153, 0.5);
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+      animation: floatUp 8s linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.6) rotate(0deg); opacity: 0; }
+      20% { opacity: 0.9; }
+      100% { transform: translateY(-110vh) scale(1.3) rotate(360deg); opacity: 0; }
+    }
+
+    /* الشرر عند تحريك الماوس */
+    .sparkle {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #f43f5e;
+      box-shadow: 0 0 10px #f43f5e, 0 0 20px #fbcfe8;
+      pointer-events: none;
+      z-index: 9999;
+      animation: sparkleFade 0.8s linear forwards;
+    }
+
+    @keyframes sparkleFade {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    #envelopePage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 35px;
+      z-index: 10;
+      perspective: 1000px;
+    }
+
+    /* كارت الضرف الاحترافي */
+    .envelope-box {
+      position: relative;
+      width: 340px;
+      height: 240px;
+      background: linear-gradient(145deg, #f48fb1, #f06292);
+      border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(219, 39, 119, 0.4), inset 0 0 15px rgba(255,255,255,0.5);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      cursor: pointer;
+      transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+      transform-style: preserve-3d;
+    }
+
+    .envelope-details {
+      position: absolute;
+      width: 88%; height: 74%;
+      top: 52%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      z-index: 1;
+      padding: 10px;
+      border: 1px solid #fbcfe8;
+    }
+
+    .names-title { font-family: 'Aref Ruqaa', serif; font-size: 32px; color: #831843; text-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .sub-title { font-family: 'Amiri', serif; font-size: 16px; color: #be185d; margin-top: 4px; }
+
+    .envelope-top-flap {
+      position: absolute; top: 0; left: 0;
+      width: 0; height: 0;
+      border-left: 170px solid transparent;
+      border-right: 170px solid transparent;
+      border-top: 130px solid #ec407a;
+      transform-origin: top;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 4;
+    }
+
+    .envelope-side-left {
+      position: absolute; bottom: 0; left: 0;
+      width: 0; height: 0;
+      border-left: 170px solid #f48fb1;
+      border-top: 115px solid transparent;
+      border-bottom: 115px solid #f48fb1;
+      border-radius: 20px 0 0 20px;
+      z-index: 2;
+    }
+
+    .envelope-side-right {
+      position: absolute; bottom: 0; right: 0;
+      width: 0; height: 0;
+      border-right: 170px solid #f48fb1;
+      border-top: 115px solid transparent;
+      border-bottom: 115px solid #f48fb1;
+      border-radius: 0 20px 20px 0;
+      z-index: 2;
+    }
+
+    .bow-container {
+      position: absolute; top: 115px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 5; pointer-events: none;
+      display: flex; justify-content: center; align-items: center;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    }
+
+    .bow-center { width: 20px; height: 20px; background: #db2777; border-radius: 50%; z-index: 2; }
+    .bow-left, .bow-right { width: 34px; height: 26px; background: linear-gradient(135deg, #f43f5e, #be185d); border-radius: 50% 50% 10% 50%; }
+    .bow-left { transform: rotate(-18deg); margin-right: -5px; }
+    .bow-right { transform: rotate(18deg) scaleX(-1); margin-left: -5px; }
+
+    .open-card-btn {
+      background: linear-gradient(135deg, #db2777 0%, #be185d 100%);
+      color: #ffffff; border: none; padding: 16px 55px; border-radius: 35px;
+      font-size: 18px; font-weight: 800; font-family: 'Tajawal', sans-serif;
+      box-shadow: 0 12px 30px rgba(219, 39, 119, 0.4); cursor: pointer;
+      transition: all 0.3s ease; animation: pulseBtn 2s infinite;
+    }
+
+    @keyframes pulseBtn {
+      0%, 100% { transform: scale(1); box-shadow: 0 12px 30px rgba(219, 39, 119, 0.4); }
+      50% { transform: scale(1.05); box-shadow: 0 18px 40px rgba(219, 39, 119, 0.6); }
+    }
+
+    #invitationDetails {
+      display: none; width: 100%; max-width: 680px; z-index: 10;
+      flex-direction: column; align-items: center; gap: 35px;
+      padding: 40px 15px 140px 15px;
+    }
+
+    /* بطاقات الأقسام بالزجاج التفاعلي */
+    .section-card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(16px);
+      border-radius: 24px; padding: 32px 24px;
+      box-shadow: 0 20px 40px rgba(219, 39, 119, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(251, 207, 232, 0.7);
+      text-align: center; opacity: 0; transform: translateY(40px) scale(0.96);
+      transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .section-card.reveal { opacity: 1; transform: translateY(0) scale(1); }
+
+    .info-badges { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
+    .badge {
+      background: rgba(252, 231, 243, 0.95); color: #9d174d; padding: 8px 18px;
+      border-radius: 20px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    .quran-title { font-family: 'Amiri', serif; font-size: 22px; color: #831843; font-weight: 700; }
+    .quran-verse { font-family: 'Amiri', serif; font-size: 19px; color: #be185d; line-height: 2; font-weight: 700; }
+    .verse-ref { font-size: 13px; color: #9d174d; opacity: 0.85; }
+
+    .names-header {
+      font-family: 'Aref Ruqaa', serif; font-size: 54px; color: #831843; margin: 15px 0;
+      display: flex; align-items: center; justify-content: center; gap: 15px;
+      text-shadow: 0 4px 10px rgba(219, 39, 119, 0.15);
+    }
+    .names-header i { color: #db2777; font-size: 34px; animation: heartBeat 1.5s infinite; }
+
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.25); }
+    }
+
+    .polaroid-frame {
+      background: #ffffff; padding: 14px 14px 38px 14px; border-radius: 12px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15); transform: rotate(-2deg);
+      max-width: 320px; margin: 15px auto; transition: transform 0.4s ease;
+    }
+    .polaroid-frame:hover { transform: rotate(0deg) scale(1.03); }
+    .polaroid-img { width: 100%; height: 310px; object-fit: cover; border-radius: 8px; }
+
+    .middle-photo-card { padding: 16px; border-radius: 24px; }
+    .middle-photo-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 18px; margin: 0 auto; display: block; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+
+    .countdown-title { font-size: 15px; color: #be185d; font-weight: 800; margin-bottom: 20px; }
+    .countdown-box { display: flex; justify-content: center; gap: 12px; }
+    
+    .time-card { 
+      background: rgba(255, 255, 255, 0.95); 
+      border: 1px solid #fbcfe8; 
+      padding: 14px 18px; 
+      border-radius: 18px; 
+      min-width: 76px; 
+      box-shadow: 0 8px 20px rgba(219, 39, 119, 0.08);
+      transition: transform 0.3s ease;
+    }
+    .time-card:hover { transform: translateY(-4px); }
+    .time-card span { display: block; font-size: 24px; font-weight: 800; color: #831843; }
+    .time-card label { font-size: 11px; color: #be185d; font-weight: 700; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 100%; }
+    @media (max-width: 550px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .icon-box { width: 54px; height: 54px; background: #fce7f3; color: #db2777; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 24px; box-shadow: 0 6px 15px rgba(219, 39, 119, 0.15); }
+
+    .btn {
+      width: 100%; padding: 14px 20px; border-radius: 25px; border: none;
+      font-size: 15px; font-weight: 700; font-family: 'Tajawal', sans-serif;
+      cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; margin-top: 16px;
+    }
+    .btn-pink { background: linear-gradient(135deg, #db2777 0%, #be185d 100%); color: #ffffff; box-shadow: 0 8px 20px rgba(219, 39, 119, 0.3); }
+    .btn-green { background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%); color: #ffffff; box-shadow: 0 8px 20px rgba(13, 148, 136, 0.3); }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.2); }
+
+    input, textarea, select {
+      width: 100%; padding: 13px 16px; border: 1px solid #fbcfe8; border-radius: 14px;
+      margin-top: 10px; outline: none; font-family: 'Tajawal', sans-serif; font-size: 14px; background: rgba(255, 255, 255, 0.95);
+      transition: all 0.3s ease;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #db2777; box-shadow: 0 0 12px rgba(219, 39, 119, 0.25);
+    }
+
+    /* تصميم كروت التهاني البراقة */
+    .wishes-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 22px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding: 6px;
+      text-align: right;
+    }
+    @media (max-width: 500px) { .wishes-grid { grid-template-columns: 1fr; } }
+
+    .wish-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #fbcfe8;
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 6px 18px rgba(219, 39, 119, 0.08);
+      display: flex; flex-direction: column; justify-content: space-between;
+      animation: popIn 0.5s ease forwards;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .wish-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 25px rgba(219, 39, 119, 0.18); }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .wish-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .wish-badge { font-size: 11px; padding: 4px 12px; border-radius: 14px; font-weight: 800; background: #fce7f3; color: #be185d; }
+
+    .btn-bottom-right { position: fixed; bottom: 20px; right: 15px; z-index: 100; }
+    .btn-bottom-left { position: fixed; bottom: 20px; left: 15px; z-index: 100; }
+    .control-btn { background: rgba(255, 255, 255, 0.95); border: 1px solid #fbcfe8; padding: 12px 22px; border-radius: 30px; color: #831843; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 20px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+    .control-btn:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+
+  <div class="hearts-container" id="heartsContainer"></div>
+
+  <audio id="bgMusic" loop src="song.mp3"></audio>
+  <audio id="zaghrootaAudio" src="zaghrota.mp3"></audio>
+
+  <!-- الصفحة الأولى -->
+  <div id="envelopePage">
+    <div class="envelope-box" id="tiltEnvelope" onclick="goToInvitationPage(event)">
+      <div class="envelope-top-flap" id="topFlap"></div>
+      <div class="envelope-details">
+        <div class="names-title">سارة & حمزه</div>
+        <div class="sub-title">دعوة لحضور حفل الزفاف</div>
+      </div>
+      <div class="envelope-side-left"></div>
+      <div class="envelope-side-right"></div>
+      <div class="bow-container">
+        <div class="bow-left"></div>
+        <div class="bow-center"></div>
+        <div class="bow-right"></div>
+      </div>
+    </div>
+    <button class="open-card-btn" onclick="goToInvitationPage(event)">افتح الدعوة ✨</button>
+  </div>
+
+  <!-- الصفحة الثانية -->
+  <div id="invitationDetails">
+    
+    <div class="section-card tilt-card">
+      <div class="info-badges">
+        <span class="badge"><i class="fa-solid fa-location-dot"></i> coco loco wedding venue</span>
+        <span class="badge"><i class="fa-solid fa-calendar-days"></i> ١٤ سبتمبر ٢٠٢٦</span>
+      </div>
+      <p class="quran-title">بسم الله الرحمن الرحيم</p>
+      <p class="quran-verse">"وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً"</p>
+      <p class="verse-ref">سورة الروم - الآية ٢١</p>
+    </div>
+
+    <div class="section-card tilt-card">
+      <div class="names-header">سارة <i class="fa-solid fa-heart"></i> حمزه</div>
+      <p style="color: #be185d; font-size: 17px; font-weight: 600;">يتشرفان بدعوتكم لمشاركتهما فرحة العمر</p>
+    </div>
+
+    <div class="section-card">
+      <div class="polaroid-frame">
+        <img src="photo.jpeg" alt="سارة وحمزه" class="polaroid-img">
+      </div>
+    </div>
+
+    <div class="section-card tilt-card">
+      <div class="countdown-title">✦ العد التنازلي لليوم الذي يجمع القلوب ✦</div>
+      <div class="countdown-box">
+        <div class="time-card"><span id="days">00</span><label>يوم</label></div>
+        <div class="time-card"><span id="hours">00</span><label>ساعة</label></div>
+        <div class="time-card"><span id="minutes">00</span><label>دقيقة</label></div>
+        <div class="time-card"><span id="seconds">00</span><label>ثانية</label></div>
+      </div>
+    </div>
+
+    <div class="section-card middle-photo-card">
+      <img src="photo.jpeg" alt="سارة وحمزه" class="middle-photo-img">
+    </div>
+
+    <div class="grid-2">
+      <div class="section-card tilt-card">
+        <div class="icon-box"><i class="fa-solid fa-location-dot"></i></div>
+        <h3>مكان القاعة</h3>
+        <p style="margin-top: 6px;"><b>coco loco wedding venue</b><br>يوم الاثنين 14 سبتمبر 2026</p>
+        <a href="https://maps.app.goo.gl/sBc2CQq5krEFwMbK8" target="_blank" class="btn btn-green">
+          <i class="fa-solid fa-map-location-dot"></i> افتح الخريطة
+        </a>
+      </div>
+
+      <div class="section-card tilt-card">
+        <div class="icon-box"><i class="fa-solid fa-calendar-plus"></i></div>
+        <h3>احفظ الموعد</h3>
+        <p style="margin-top: 6px;">عشان نذكرك قبل اليوم وما تنساش تشاركنا فرحتنا</p>
+        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=حفل+زفاف+سارة+وحمزه&dates=20260914T180000Z/20260914T230000Z&location=coco+loco+wedding+venue" target="_blank" class="btn btn-green">
+          <i class="fa-solid fa-download"></i> Google Calendar
+        </a>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="section-card tilt-card">
+        <div class="icon-box"><i class="fa-solid fa-user-check"></i></div>
+        <h3>تأكيد الحضور</h3>
+        <form id="rsvpForm">
+          <input type="text" id="guestName" placeholder="اكتب اسمك الكريِم" required>
+          <button type="submit" class="btn btn-pink">تأكيد الحضور ✨</button>
+        </form>
+      </div>
+
+      <div class="section-card tilt-card">
+        <div class="icon-box"><i class="fa-solid fa-share-nodes"></i></div>
+        <h3>شارِك الدعوة</h3>
+        <p style="margin-top: 6px;">ابعت الدعوة لكل اللى بتحبهم عشان يفرحوا معانا</p>
+        <button onclick="copyLink()" class="btn btn-pink"><i class="fa-solid fa-copy"></i> نسخ الرابط</button>
+      </div>
+    </div>
+
+    <div class="section-card" style="text-align: right;">
+      <h3 style="text-align: center; color: #831843; font-size: 22px; margin-bottom: 6px;">كلمات من القلب 💌</h3>
+      <p style="text-align: center; font-size: 13px; color: #be185d; margin-bottom: 16px;">شاركونا تهنئتكم الدافئة لتظهر للجميع وتظل ذكرى جميلة للعروسين</p>
+      
+      <form id="wishForm">
+        <input type="text" id="senderName" placeholder="اسمك الكريم" required>
+        <textarea id="senderMsg" rows="2" placeholder="اكتب تهنئة حلوة من القلب للعروسين..." required></textarea>
+        
+        <select id="targetPerson">
+          <option value="العروسين">تهنئة للعروسين معاً ❤️</option>
+          <option value="العروسة">تهنئة خاصة للعروسة سارة 🌸</option>
+          <option value="العريس">تهنئة خاصة للعريس حمزه 👔</option>
+        </select>
+
+        <button type="submit" class="btn btn-pink">أرسل التهنئة 🎉</button>
+      </form>
+
+      <div class="wishes-grid" id="wishesList">
+        <p style="text-align: center; color: #be185d; font-size: 13px; grid-column: span 2;">جاري تحميل التهاني...</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="btn-bottom-right">
+    <button class="control-btn" id="zaghrootaBtn" onclick="toggleZaghroota(event)">زغروطة الحلوة 🎉</button>
+  </div>
+
+  <div class="btn-bottom-left">
+    <button class="control-btn" id="audioToggleBtn" onclick="toggleAudio(event)">
+      <span id="audioStatusText">كتم الموسيقى</span>
+    </button>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://iuupflzcwwrrdtfsgreo.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml1dXBmbHpjd3dycmR0ZnNncmVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODczMjUwMzMsImV4cCI6MjEwMjkwMTAzM30.Db0pAkxk87OBugK2uuBku2WwUx18imEIg1GcHGoiKfM';
+    
+    let _supabase;
+    try {
+      _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } catch(e) {
+      console.error(e);
+    }
+
+    const music = document.getElementById('bgMusic');
+    const zaghroota = document.getElementById('zaghrootaAudio');
+
+    // تأثير حركة الماوس والشرر (Mouse Sparkles)
+    document.addEventListener('mousemove', function(e) {
+      if(Math.random() < 0.15) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = e.clientX + 'px';
+        sparkle.style.top = e.clientY + 'px';
+        document.body.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 800);
+      }
+    });
+
+    // 3D Tilt Effect الكروت بتتحرك مع الماوس
+    document.querySelectorAll('.tilt-card, .envelope-box').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        card.style.transform = `perspective(1000px) rotateX(${-y / 20}deg) rotateY(${x / 20}deg) scale(1.02)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
+      });
+    });
+
+    function createHearts() {
+      const container = document.getElementById('heartsContainer');
+      const heartIcons = ['♥', '💖', '🌸', '💕', '✦', '✨'];
+      for (let i = 0; i < 25; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('floating-heart');
+        heart.innerHTML = heartIcons[Math.floor(Math.random() * heartIcons.length)];
+        heart.style.left = Math.random() * 100 + '%';
+        heart.style.animationDuration = (6 + Math.random() * 7) + 's';
+        heart.style.fontSize = (12 + Math.random() * 16) + 'px';
+        container.appendChild(heart);
+      }
+    }
+    createHearts();
+
+    function checkReveal() {
+      document.querySelectorAll('.section-card').forEach(card => {
+        if (card.getBoundingClientRect().top < window.innerHeight - 50) {
+          card.classList.add('reveal');
+        }
+      });
+    }
+    window.addEventListener('scroll', checkReveal);
+
+    // زر فتح الدعوة مع الألعاب النارية
+    function goToInvitationPage(e) {
+      music.play().catch(() => {});
+      document.getElementById('topFlap').style.transform = 'rotateX(180deg)';
+      
+      // إطلاق Confetti ألعاب نارية
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+
+      setTimeout(() => {
+        document.getElementById('envelopePage').style.display = 'none';
+        document.getElementById('invitationDetails').style.display = 'flex';
+        checkReveal();
+        loadWishes();
+      }, 600);
+    }
+
+    async function loadWishes() {
+      const list = document.getElementById('wishesList');
+      if (!_supabase) return;
+
+      try {
+        const { data, error } = await _supabase.from('wishes').select('*');
+        if (error) {
+          list.innerHTML = `<p style="text-align:center; font-size:12px; color:#be185d; grid-column: span 2;">خطأ: ${error.message}</p>`;
+          return;
+        }
+
+        list.innerHTML = '';
+        if (!data || data.length === 0) {
+          list.innerHTML = '<p style="text-align:center; font-size:13px; color:#be185d; grid-column: span 2;">كن أول من يكتب تهنئة للعروسين! ❤️</p>';
+          return;
+        }
+
+        data.reverse().forEach(item => {
+          const name = item.name || item.guest_name || 'فاعل خير';
+          const msg = item.message || item.wish || '';
+          const target = item.target || 'العروسين';
+
+          if (msg.trim() !== '') {
+            const wishCard = document.createElement('div');
+            wishCard.className = 'wish-card';
+            wishCard.innerHTML = `
+              <div>
+                <div class="wish-card-header">
+                  <b style="color: #831843; font-size: 14px;">${name}</b>
+                  <span class="wish-badge">${target}</span>
+                </div>
+                <div style="font-size: 13px; color: #be185d; line-height: 1.5; white-space: pre-wrap;">${msg}</div>
+              </div>
+            `;
+            list.appendChild(wishCard);
+          }
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // إرسال التهنئة مع ألعاب نارية خفيفة
+    document.getElementById('wishForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('senderName').value;
+      const msg = document.getElementById('senderMsg').value;
+      const target = document.getElementById('targetPerson').value;
+
+      const { error } = await _supabase.from('wishes').insert([{ name: name, message: msg, target: target }]);
+      if (error) {
+        alert('خطأ: ' + error.message);
+        return;
+      }
+
+      confetti({ particleCount: 60, spread: 60, origin: { y: 0.8 } });
+
+      document.getElementById('senderName').value = '';
+      document.getElementById('senderMsg').value = '';
+      alert('تمت إضافة تهنئتك بنجاح! ✨');
+      loadWishes();
+    });
+
+    // تأكيد الحضور
+    document.getElementById('rsvpForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const guest = document.getElementById('guestName').value;
+
+      await _supabase.from('wishes').insert([{ name: guest, message: 'أكد/ت الحضور لحفل الزفاف 🎉', target: 'تأكيد حضور' }]);
+
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.7 } });
+      alert(`شكراً لك يا ${guest}! تم تأكيد حضورك بنجاح ✨`);
+      document.getElementById('guestName').value = '';
+      loadWishes();
+    });
+
+    const weddingDate = new Date("September 14, 2026 18:00:00").getTime();
+    setInterval(() => {
+      const distance = weddingDate - new Date().getTime();
+      if (distance > 0) {
+        document.getElementById("days").innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+        document.getElementById("hours").innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        document.getElementById("minutes").innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        document.getElementById("seconds").innerText = Math.floor((distance % (1000 * 60)) / 1000);
+      }
+    }, 1000);
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href);
+      alert("تم نسخ رابط الدعوة بنجاح! 💕");
+    }
+
+    function toggleAudio(e) {
+      if (music.paused) { music.play(); document.getElementById('audioStatusText').innerText = 'كتم الموسيقى'; }
+      else { music.pause(); document.getElementById('audioStatusText').innerText = 'تشغيل الموسيقى'; }
+    }
+
+    function toggleZaghroota(e) {
+      if (zaghroota.paused) { zaghroota.currentTime = 0; zaghroota.play(); }
+      else { zaghroota.pause(); }
+    }
+  </script>
+</body>
+</html>
